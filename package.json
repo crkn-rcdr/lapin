@@ -1,0 +1,19 @@
+{
+  "name": "lapin",
+  "version": "1.0.0",
+  "description": "Canadiana Access Platform API server",
+  "main": "server.js",
+  "repository": "https://github.com/crkn-rcdr/lapin",
+  "author": "Sascha Adler <sadler@crkn.ca>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-openapi-validator": "^3.12.9",
+    "morgan": "^1.10.0",
+    "njwt": "^1.0.0",
+    "node-fetch": "^2.6.0",
+    "require-env": "^0.2.1",
+    "swagger-ui-express": "^4.1.4"
+  }
+}
