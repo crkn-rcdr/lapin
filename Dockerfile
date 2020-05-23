@@ -15,9 +15,7 @@ RUN if [ $NODE_ENV = "development" ]; \
   else yarn install; \
   fi
 
-COPY --chown=node:node api.json server.js ./
-COPY --chown=node:node routes ./
-COPY --chown=node:node security ./
+COPY --chown=node:node src ./
 
 # Sets default server, which can be overridden at run time
 ENV COUCH http://iris.tor.c7a.ca:5984
