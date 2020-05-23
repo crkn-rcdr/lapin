@@ -1,16 +1,13 @@
 FROM node:14.3.0-alpine3.11
-ARG node_env=production
 
 WORKDIR /lapin
 RUN chown -R node:node .
 
 USER node
 
-ENV NODE_ENV=$node_env
-
 COPY --chown=node:node package.json yarn.lock ./
 
-RUN if [ $NODE_ENV = "development" ]; \
+RUN if [ "$NODE_ENV" = "development" ]; \
   then yarn install --dev; \
   else yarn install; \
   fi

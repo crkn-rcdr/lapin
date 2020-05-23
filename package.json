@@ -2,7 +2,11 @@
   "name": "lapin",
   "version": "1.0.0",
   "description": "Canadiana Access Platform API server",
-  "main": "server.js",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "yarn exec nodemon -w src -x 'yarn run start'"
+  },
   "repository": "https://github.com/crkn-rcdr/lapin",
   "author": "Sascha Adler <sadler@crkn.ca>",
   "license": "MIT",
@@ -15,5 +19,8 @@
     "node-fetch": "^2.6.0",
     "require-env": "^0.2.1",
     "swagger-ui-express": "^4.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
