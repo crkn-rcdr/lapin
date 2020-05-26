@@ -33,9 +33,7 @@ new OpenApiValidator({
   .install(app)
   .then(() => {
     app.use((err, _req, res, _next) => {
-      res
-        .status(err.status || 500)
-        .json({ status: err.status, message: err.message });
+      res.status(err.status || 500).json({ message: err.message });
     });
 
     http.createServer(app).listen(port);
