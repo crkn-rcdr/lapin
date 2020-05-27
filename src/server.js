@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const http = require("http");
@@ -11,6 +12,7 @@ const port = 8081;
 const app = express();
 const apiSpec = path.join(__dirname, "api.json");
 
+app.use(cors());
 app.use(bodyParser.json());
 
 if (process.env.NODE_ENV === "development") app.use(require("morgan")("dev"));
