@@ -96,9 +96,20 @@
         "type": "object",
         "properties": {
           "id": { "$ref": "#/components/schemas/CollectionNOID" },
-          "slug": { "type": "string" },
-          "label": { "$ref": "#/components/schemas/LanguageMap" },
+          "slug": {
+            "description": "The slug that resolves to this collection",
+            "type": "string"
+          },
+          "label": {
+            "description": "Language-mapped strings for labelling the collection",
+            "$ref": "#/components/schemas/LanguageMap"
+          },
+          "ordered": {
+            "description": "True if the order of the collection's item list matters, and reordering is sensible",
+            "type": "boolean"
+          },
           "items": {
+            "description": "The list of member items of this collection. Items can be either manifests or other collections.",
             "type": "array",
             "items": {
               "type": "object",
@@ -114,11 +125,25 @@
               },
               "required": ["id", "slug", "label"]
             }
+          },
+          "parents": {
+            "description": "The list of this collection's parents, i.e. collections with this collection as a constituent item.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "$ref": "#/components/schemas/CollectionNOID" },
+                "slug": { "type": "string" },
+                "label": { "$ref": "#/components/schemas/LanguageMap" }
+              },
+              "required": ["id", "slug", "label"]
+            }
           }
         },
         "required": ["id", "slug", "label", "items"]
       },
       "CollectionNOID": {
+        "description": "A NOID for a collection (hence the 's' prefix)",
         "type": "string",
         "pattern": "^69429\\/s[0-9]+[0-9bcdfghjkmnpqrstvwxz]{2}[0-9][0-9bcdfghjkmnpqrstvwxz]{2}[0-9][0-9bcdfghjkmnpqrstvwxz]{2}[0-9][0-9bcdfghjkmnpqrstvwxz]$"
       },
@@ -139,6 +164,7 @@
         "additionalProperties": { "type": "string" }
       },
       "ManifestNOID": {
+        "description": "A NOID for a manifest (hence the 'm' prefix)",
         "type": "string",
         "pattern": "^69429\\/m[0-9]+[0-9bcdfghjkmnpqrstvwxz]{2}[0-9][0-9bcdfghjkmnpqrstvwxz]{2}[0-9][0-9bcdfghjkmnpqrstvwxz]{2}[0-9][0-9bcdfghjkmnpqrstvwxz]$"
       },

@@ -8,14 +8,16 @@ async function _request(path, options, method, payload) {
   let url = [couchUrl, path].join("/");
   if (options) url = `${url}?${qs.stringify(options)}`;
 
-  if (method) fetchOptions.method = method;
-  if (payload) fetchOptions.body = JSON.stringify(payload);
-
-  return await fetch(url, {
+  let fetchOptions = {
     headers: {
       Accept: "application/json",
     },
-  });
+  };
+
+  if (method) fetchOptions.method = method;
+  if (payload) fetchOptions.body = JSON.stringify(payload);
+
+  return await fetch(url, fetchOptions);
 }
 
 function handleErrors(res) {
@@ -33,22 +35,30 @@ function handleErrors(res) {
 // 3. given a view and a list of keys, fetch all of the values in the view?
 
 async function getDocument(db, id) {
-  let response = await _request([db, id].join("/"));
+  let response = await _request([db, encodeURIComponent(id)].join("/"));
   handleErrors(response);
   return await response.json();
 }
 
-async function getDocumentFromView(db, ddoc, view, key) {
+async function _getResultFromView(db, ddoc, view, key, includeDocs) {
   let response = await _request(
     [db, "_design", ddoc, "_view", view].join("/"),
-    { key: JSON.stringify(key), include_docs: true }
+    { key: JSON.stringify(key), include_docs: includeDocs }
   );
   handleErrors(response);
   let data = await response.json();
   if (data.rows.length === 0) {
     throw new NotFoundError("Key lookup failed.");
   }
-  return data.rows[0].doc;
+  return data.rows[0];
+}
+
+async function getIdFromView(db, ddoc, view, key) {
+  return (await _getResultFromView(db, ddoc, view, key, false)).id;
+}
+
+async function getDocumentFromView(db, ddoc, view, key) {
+  return (await _getResultFromView(db, ddoc, view, key, true)).doc;
 }
 
 async function documentsWithPrefix(db, prefix) {
@@ -62,9 +72,22 @@ async function documentsByIDs(db, keys) {
   return result;
 }
 
+async function viewResultsFromKeys(db, ddoc, view, keys) {
+  let response = await _request(
+    [db, "_design", ddoc, "_view", view].join("/"),
+    {},
+    "POST",
+    { keys }
+  );
+  handleErrors(response);
+  return (await response.json()).rows;
+}
+
 module.exports = {
   getDocument,
+  getIdFromView,
   getDocumentFromView,
   documentsWithPrefix,
   documentsByIDs,
+  viewResultsFromKeys,
 };
