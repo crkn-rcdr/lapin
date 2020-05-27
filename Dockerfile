@@ -12,10 +12,11 @@ RUN if [ "$NODE_ENV" = "development" ]; \
   else yarn install; \
   fi
 
-COPY --chown=node:node src ./
+COPY --chown=node:node src src
 
 # Sets default server, which can be overridden at run time
-ENV COUCH http://iris.tor.c7a.ca:5984
+ENV COUCH=http://iris.tor.c7a.ca:5984 \
+  NODE_ENV=production
 
 EXPOSE 8081
 CMD yarn run start
