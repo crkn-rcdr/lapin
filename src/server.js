@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
-const logger = require("morgan");
 const http = require("http");
 const swagger = require("swagger-ui-express");
 const { OpenApiValidator } = require("express-openapi-validator");
@@ -14,7 +13,7 @@ const apiSpec = path.join(__dirname, "api.json");
 
 app.use(bodyParser.json());
 
-app.use(logger("dev"));
+if (process.env.NODE_ENV === "development") app.use(require("morgan")("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/spec", express.static(apiSpec));
@@ -37,7 +36,7 @@ new OpenApiValidator({
     });
 
     http.createServer(app).listen(port);
-    console.log(`Listening on port ${port}`);
+    console.log(`Lapin has started. Listening on port ${port}`);
   });
 
 module.exports = app;
