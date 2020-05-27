@@ -121,9 +121,10 @@
                   ]
                 },
                 "slug": { "type": "string" },
-                "label": { "$ref": "#/components/schemas/LanguageMap" }
+                "label": { "$ref": "#/components/schemas/LanguageMap" },
+                "type": { "type": "string", "enum": ["manifest", "collection"] }
               },
-              "required": ["id", "slug", "label"]
+              "required": ["id", "slug", "label", "type"]
             }
           },
           "parents": {

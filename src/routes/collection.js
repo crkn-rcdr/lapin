@@ -16,6 +16,7 @@ const lookupItems = function (items) {
     let collections = {};
     rows.map((row) => {
       row.value.label = multiTextValueToSingle(row.value.label);
+      row.value.type = "collection";
       collections[row.id] = row.value;
     });
     return collections;
@@ -30,6 +31,8 @@ const lookupItems = function (items) {
     let manifests = {};
     rows.map((row) => {
       row.value.label = multiTextValueToSingle(row.value.label);
+      row.value.manifestType = row.value.type;
+      row.value.type = "manifest";
       manifests[row.id] = row.value;
     });
     return manifests;
