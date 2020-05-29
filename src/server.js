@@ -23,7 +23,7 @@ app.use("/docs", swagger.serve, swagger.setup(require(apiSpec)));
 
 new OpenApiValidator({
   apiSpec,
-  validateResponses: true,
+  validateResponses: process.env.NODE_ENV === "test",
   operationHandlers: path.join(__dirname, "routes"),
   validateSecurity: {
     handlers: {
@@ -34,7 +34,9 @@ new OpenApiValidator({
   .install(app)
   .then(() => {
     app.use((err, _req, res, _next) => {
-      res.status(err.status || 500).json({ message: err.message });
+      let obj = { message: err.message };
+      if (process.env.NODE_ENV === "development") obj.stack = err.stack;
+      res.status(err.status || 500).json(obj);
     });
 
     http.createServer(app).listen(port);

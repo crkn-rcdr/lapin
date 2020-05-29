@@ -10,17 +10,7 @@ function multiTextValueToSingle(value) {
   return rv;
 }
 
-function isCollectionNoid(noid) {
-  return noid.startsWith("69429/s");
-}
-
-function isManifestNoid(noid) {
-  return noid.startsWith("69429/m");
-}
-
 module.exports = {
   singleTextValueToMulti,
   multiTextValueToSingle,
-  isCollectionNoid,
-  isManifestNoid,
 };
