@@ -63,6 +63,34 @@
         "x-eov-operation-id": "resolve",
         "x-eov-operation-handler": "slug"
       }
+    },
+    "/slug/search/{prefix}": {
+      "post": {
+        "summary": "Searches for slugs that start with the provided prefix.",
+        "description": "There is a limit of ten results.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "prefix",
+            "description": "All results will start with this string",
+            "schema": { "type": "string", "minLength": 1 },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Results have been returned.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        },
+        "x-eov-operation-id": "search",
+        "x-eov-operation-handler": "slug"
+      }
     }
   },
   "components": {

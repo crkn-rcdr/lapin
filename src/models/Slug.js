@@ -2,6 +2,7 @@ const { NotFoundError } = require("../errors");
 const {
   getDocumentFromView,
   viewResultsFromKeys,
+  searchView,
 } = require("../resources/couch");
 
 class Slug {
@@ -52,12 +53,26 @@ class Slug {
     };
   }
 
-  static async search(prefix, limit = 10) {}
+  static async search(prefix, limit = 10) {
+    let results;
+    try {
+      results = await searchView(
+        Slug.#DB_NAME,
+        null,
+        "_all_docs",
+        prefix,
+        limit
+      );
+    } catch (error) {
+      throw error;
+    }
+    return results;
+  }
 
   static async slugMap(noids) {
     let rows;
     try {
-      rows = await viewResultsFromKeys("slug", "access", "noid", noids);
+      rows = await viewResultsFromKeys(Slug.#DB_NAME, "access", "noid", noids);
     } catch (error) {
       throw error;
     }

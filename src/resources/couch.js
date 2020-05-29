@@ -20,6 +20,14 @@ async function _request(path, options, method, payload) {
   return await fetch(url, fetchOptions);
 }
 
+function buildViewPath(db, ddoc, view) {
+  if (ddoc === null && view === "_all_docs") {
+    return [db, "_all_docs"].join("/");
+  } else {
+    return [db, "_design", ddoc, "_view", view].join("/");
+  }
+}
+
 function handleErrors(res) {
   if (res.status === 404) {
     throw new NotFoundError("Couch error status: 404");
@@ -37,10 +45,10 @@ async function getDocument(db, id) {
 }
 
 async function getDocumentFromView(db, ddoc, view, key) {
-  let response = await _request(
-    [db, "_design", ddoc, "_view", view].join("/"),
-    { key: JSON.stringify(key), include_docs: true }
-  );
+  let response = await _request(buildViewPath(db, ddoc, view), {
+    key: JSON.stringify(key),
+    include_docs: true,
+  });
   handleErrors(response);
   let data = await response.json();
   if (data.rows.length === 0) {
@@ -50,18 +58,26 @@ async function getDocumentFromView(db, ddoc, view, key) {
 }
 
 async function viewResultsFromKeys(db, ddoc, view, keys) {
-  let response = await _request(
-    [db, "_design", ddoc, "_view", view].join("/"),
-    {},
-    "POST",
-    { keys }
-  );
+  let response = await _request(buildViewPath(db, ddoc, view), {}, "POST", {
+    keys,
+  });
   handleErrors(response);
   return (await response.json()).rows;
+}
+
+async function searchView(db, ddoc, view, prefix, limit) {
+  let response = await _request(
+    buildViewPath(db, ddoc, view),
+    { start_key: JSON.stringify(prefix), limit },
+    "GET"
+  );
+  handleErrors(response);
+  return (await response.json()).rows.map((row) => row.key);
 }
 
 module.exports = {
   getDocument,
   getDocumentFromView,
   viewResultsFromKeys,
+  searchView,
 };

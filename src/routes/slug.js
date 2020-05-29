@@ -8,4 +8,9 @@ module.exports = {
       .then(() => res.json(slug))
       .catch((error) => next(error));
   },
+  search: (req, res, next) => {
+    Slug.search(req.params.prefix)
+      .then((results) => res.json(results))
+      .catch((error) => next(error));
+  },
 };
