@@ -56,8 +56,6 @@ class Collection {
   }
 
   #loadItems = async () => {
-    console.log(this.#itemIds);
-    console.log(this.#itemIds.filter(Manifest.isNoid));
     let collectionLookup = Collection.basicLookup(
       this.#itemIds.filter(Collection.isNoid)
     );
@@ -73,7 +71,7 @@ class Collection {
     } catch (error) {
       throw error;
     }
-    console.log(manifests);
+
     let itemRefs = { ...collections, ...manifests };
     this.#items = this.#itemIds.map((id) => {
       return { id, ...itemRefs[id] } || {};
