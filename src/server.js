@@ -10,7 +10,7 @@ const tokenHandler = require("./security/jwt");
 
 const port = 8081;
 const app = express();
-const apiSpec = path.join(__dirname, "api.json");
+const apiSpec = path.join(__dirname, "../spec/api.json");
 
 app.use(cors());
 app.use(bodyParser.json());

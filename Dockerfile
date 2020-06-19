@@ -12,6 +12,7 @@ RUN if [ "$NODE_ENV" = "development" ]; \
   else yarn install; \
   fi
 
+COPY --chown=node:node spec spec
 COPY --chown=node:node src src
 
 # Sets default server, which can be overridden at run time
