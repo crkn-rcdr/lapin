@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  lapin:
+    environment:
+      - JWT_KEY=whateverTheJWTKeyIs
+      - COUCH=anInternalCouchURL # upholstery is unsupported as of right now
