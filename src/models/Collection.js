@@ -10,6 +10,7 @@ class Collection {
   #id;
   #slug;
   #label;
+  #summary;
   #ordered;
   #public;
   #itemIds;
@@ -35,6 +36,8 @@ class Collection {
         : error;
     }
     this.#label = multiTextValueToSingle(document.label);
+    if (document.summary)
+      this.#summary = multiTextValueToSingle(document.summary);
     this.#ordered = document.ordered;
     this.#public = "public" in document;
     this.#itemIds = document.items;
@@ -112,6 +115,7 @@ class Collection {
       id: this.#id,
       slug: this.#slug,
       label: this.#label,
+      summary: this.#summary,
       ordered: this.#ordered,
       public: this.#public,
       items: this.#items,
