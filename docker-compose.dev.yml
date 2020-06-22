@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  lapin:
+    build: .
+    image: lapin:dev
+    container_name: lapin
+    command: yarn run dev
+    networks:
+      access-platform:
+        ipv4_address: 172.30.0.9
+    volumes:
+      - ./src:/lapin/src
+      - ./spec:/lapin/spec
+    environment:
+      - NODE_ENV=development
+networks:
+  access-platform:
+    external: true

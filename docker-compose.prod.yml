@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  lapin:
+    build: .
+    image: lapin:prod
+    command: yarn run start
