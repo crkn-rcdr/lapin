@@ -26,15 +26,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/spec", express.static(apiSpec));
 app.use("/docs", swagger.serve, swagger.setup(require(apiSpec)));
 
+const validateSecurity = env.contains("AUTHLESS")
+  ? false
+  : { handlers: { tokenAuth: tokenHandler } };
+
 new OpenApiValidator({
   apiSpec,
   validateResponses: nodeEnv === "test",
   operationHandlers: path.join(__dirname, "routes"),
-  validateSecurity: {
-    handlers: {
-      tokenAuth: tokenHandler,
-    },
-  },
+  validateSecurity,
 })
   .install(app)
   .then(() => {
