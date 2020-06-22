@@ -60,20 +60,6 @@ class Slug {
     }
     return results;
   }
-
-  // TODO: delete me
-  static async slugMap(noids) {
-    let rows;
-    try {
-      rows = await viewResultsFromKeys("slug", "access", "noid", noids);
-    } catch (error) {
-      throw error;
-    }
-
-    let map = {};
-    rows.map((row) => (map[row.key] = row.id));
-    return map;
-  }
 }
 
 module.exports = Slug;
