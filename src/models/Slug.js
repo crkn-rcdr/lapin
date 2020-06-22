@@ -1,20 +1,22 @@
 const { NotFoundError } = require("../errors");
 const {
-  getDocumentFromView,
+  viewResultFromKey,
   viewResultsFromKeys,
   searchView,
 } = require("../resources/couch");
 
 class Slug {
-  static #DB_NAME = "slug";
+  #type;
   #id;
   #noid;
-  #type;
+  #label;
   #isAlias;
-  #aliases;
+  #aliasOf;
 
-  constructor(id) {
+  constructor(type, id) {
+    this.#type = type;
     this.#id = id;
+    // if the type names and the db names were different, we'd set this.#db here
   }
 
   get id() {
@@ -22,14 +24,9 @@ class Slug {
   }
 
   async initialize() {
-    let document;
+    let row;
     try {
-      document = await getDocumentFromView(
-        Slug.#DB_NAME,
-        "access",
-        "aliases",
-        this.#id
-      );
+      row = await viewResultFromKey(this.#type, "access", "slug", this.#id);
     } catch (error) {
       (error) => {
         throw error.status === 404
@@ -37,42 +34,38 @@ class Slug {
           : error;
       };
     }
-    this.#noid = document.noid;
-    this.#type = document.type;
-    this.#isAlias = this.id !== document.id;
-    this.#aliases = document.aliases;
+    this.#noid = row.id;
+    this.#label = row.value.label;
+    this.#isAlias = row.value.isAlias;
+    this.#aliasOf = row.value.aliasOf;
   }
 
   toJSON() {
     return {
       id: this.#id,
       noid: this.#noid,
+      label: this.#label,
       type: this.#type,
       isAlias: this.#isAlias,
-      aliases: this.#aliases,
+      aliasOf: this.#aliasOf,
     };
   }
 
-  static async search(prefix, limit = 10) {
+  static async search(type, prefix, limit = 10) {
     let results;
     try {
-      results = await searchView(
-        Slug.#DB_NAME,
-        null,
-        "_all_docs",
-        prefix,
-        limit
-      );
+      results = await searchView(type, "access", "slug", prefix, limit);
     } catch (error) {
       throw error;
     }
     return results;
   }
 
+  // TODO: delete me
   static async slugMap(noids) {
     let rows;
     try {
-      rows = await viewResultsFromKeys(Slug.#DB_NAME, "access", "noid", noids);
+      rows = await viewResultsFromKeys("slug", "access", "noid", noids);
     } catch (error) {
       throw error;
     }

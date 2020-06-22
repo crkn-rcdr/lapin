@@ -65,17 +65,17 @@ async function getDocument(db, id) {
   return await response.json();
 }
 
-async function getDocumentFromView(db, ddoc, view, key) {
+async function viewResultFromKey(db, ddoc, view, key, includeDocs = false) {
   let response = await _request(buildViewPath(db, ddoc, view), {
     key: JSON.stringify(key),
-    include_docs: true,
+    include_docs: includeDocs,
   });
   handleErrors(response);
   let data = await response.json();
   if (data.rows.length === 0) {
     throw new NotFoundError("Key lookup failed.");
   }
-  return data.rows[0].doc;
+  return data.rows[0];
 }
 
 async function viewResultsFromKeys(db, ddoc, view, keys) {
@@ -89,7 +89,11 @@ async function viewResultsFromKeys(db, ddoc, view, keys) {
 async function searchView(db, ddoc, view, prefix, limit) {
   let response = await _request(
     buildViewPath(db, ddoc, view),
-    { start_key: JSON.stringify(prefix), limit },
+    {
+      start_key: JSON.stringify(prefix),
+      end_key: JSON.stringify(`${prefix}\ufff0`),
+      limit,
+    },
     "GET"
   );
   handleErrors(response);
@@ -99,7 +103,7 @@ async function searchView(db, ddoc, view, prefix, limit) {
 module.exports = {
   ping,
   getDocument,
-  getDocumentFromView,
+  viewResultFromKey,
   viewResultsFromKeys,
   searchView,
 };
