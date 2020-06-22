@@ -2,9 +2,10 @@ const { NotFoundError, ResourceUnreachableError } = require("../errors");
 const fetch = require("node-fetch");
 const qs = require("querystring");
 const env = require("require-env");
+const AbortController = require("abort-controller");
 const couchUrl = env.require("COUCH");
 
-async function _request(path, options, method, payload) {
+async function _request(path, options, method, payload, timeout = 10000) {
   let url = [couchUrl, path].join("/");
   if (options) url = `${url}?${qs.stringify(options)}`;
 
@@ -16,8 +17,28 @@ async function _request(path, options, method, payload) {
 
   if (method) fetchOptions.method = method;
   if (payload) fetchOptions.body = JSON.stringify(payload);
+  const controller = new AbortController();
+  const ticker = setTimeout(() => controller.abort(), timeout);
+  fetchOptions.signal = controller.signal;
 
-  return await fetch(url, fetchOptions);
+  let response;
+
+  try {
+    response = await fetch(url, fetchOptions);
+  } catch (err) {
+    console.error(`CouchDB (${couchUrl}) unreachable.`);
+    throw new ResourceUnreachableError();
+  } finally {
+    clearTimeout(ticker);
+  }
+
+  return response;
+}
+
+async function ping() {
+  console.log(`Attempting to contact CouchDB: ${couchUrl}`);
+  await _request("_all_dbs", {}, "GET", null, 2000);
+  console.log(`CouchDB reachable.`);
 }
 
 function buildViewPath(db, ddoc, view) {
@@ -76,6 +97,7 @@ async function searchView(db, ddoc, view, prefix, limit) {
 }
 
 module.exports = {
+  ping,
   getDocument,
   getDocumentFromView,
   viewResultsFromKeys,
