@@ -1,9 +1,5 @@
 const { NotFoundError } = require("../errors");
-const {
-  viewResultFromKey,
-  viewResultsFromKeys,
-  searchView,
-} = require("../resources/couch");
+const { viewResultFromKey, searchView } = require("../resources/couch");
 
 class Slug {
   #type;
