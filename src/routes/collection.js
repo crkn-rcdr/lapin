@@ -6,8 +6,7 @@ module.exports = {
     let collection = new Collection(req.params.id);
     collection
       .initialize()
-      .then(() => collection.loadParents())
-      .then(() => collection.loadItemsAndSlugs())
+      .then(() => collection.loadParentsAndItems())
       .then(() => res.json(collection))
       .catch((error) => next(error));
   },

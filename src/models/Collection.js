@@ -16,7 +16,6 @@ class Collection {
   #itemIds;
   #items;
   #parents = [];
-  #slugMap;
 
   constructor(id) {
     this.#id = id;
@@ -35,6 +34,7 @@ class Collection {
         ? new NotFoundError(`Collection ${this.#id} not found.`)
         : error;
     }
+    this.#slug = document.slug;
     this.#label = multiTextValueToSingle(document.label);
     if (document.summary)
       this.#summary = multiTextValueToSingle(document.summary);
@@ -43,7 +43,7 @@ class Collection {
     this.#itemIds = document.items;
   }
 
-  async loadParents() {
+  #loadParents = async () => {
     let rows;
     try {
       rows = await viewResultsFromKeys(Collection.#DB_NAME, "access", "items", [
@@ -54,9 +54,13 @@ class Collection {
     }
 
     this.#parents = rows.map((row) => {
-      return { id: row.id, label: multiTextValueToSingle(row.value) };
+      return {
+        id: row.id,
+        slug: row.value.slug,
+        label: multiTextValueToSingle(row.value.label),
+      };
     });
-  }
+  };
 
   #loadItems = async () => {
     let collectionLookup = Collection.basicLookup(
@@ -81,33 +85,12 @@ class Collection {
     });
   };
 
-  #loadSlugs = async () => {
-    // we're looking up slugs for 1. the collection's items
-    let noids = this.#itemIds.concat(
-      this.#parents.map((parent) => parent.id), // 2. the collection's parents
-      [this.#id] // 3 the collection itself
-    );
-
+  async loadParentsAndItems() {
     try {
-      this.#slugMap = await Slug.slugMap(noids);
+      await Promise.all([this.#loadParents(), this.#loadItems()]);
     } catch (error) {
       throw error;
     }
-  };
-
-  #insertSlugs = () => {
-    this.#slug = this.#slugMap[this.#id];
-    this.#parents.map((parent) => (parent.slug = this.#slugMap[parent.id]));
-    this.#items.map((item) => (item.slug = this.#slugMap[item.id]));
-  };
-
-  async loadItemsAndSlugs() {
-    try {
-      await Promise.all([this.#loadItems(), this.#loadSlugs()]);
-    } catch (error) {
-      throw error;
-    }
-    this.#insertSlugs();
   }
 
   toJSON() {
