@@ -1,5 +1,4 @@
 const Manifest = require("./Manifest");
-const Slug = require("./Slug");
 const { NotFoundError } = require("../errors");
 const { multiTextValueToSingle } = require("../util");
 const { getDocument, viewResultsFromKeys } = require("../resources/couch");
