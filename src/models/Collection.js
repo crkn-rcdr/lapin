@@ -13,7 +13,6 @@ class Collection {
   #summary;
   #ordered;
   #public;
-  #itemIds;
   #items;
   #parents = [];
 
@@ -40,7 +39,7 @@ class Collection {
       this.#summary = multiTextValueToSingle(document.summary);
     this.#ordered = document.ordered;
     this.#public = "public" in document;
-    this.#itemIds = document.items;
+    this.#items = document.items;
   }
 
   #loadParents = async () => {
@@ -63,12 +62,11 @@ class Collection {
   };
 
   #loadItems = async () => {
+    let itemIds = this.#items.map((item) => item.id);
     let collectionLookup = Collection.basicLookup(
-      this.#itemIds.filter(Collection.isNoid)
+      itemIds.filter(Collection.isNoid)
     );
-    let manifestLookup = Manifest.basicLookup(
-      this.#itemIds.filter(Manifest.isNoid)
-    );
+    let manifestLookup = Manifest.basicLookup(itemIds.filter(Manifest.isNoid));
     let collections, manifests;
     try {
       [collections, manifests] = await Promise.all([
@@ -80,8 +78,8 @@ class Collection {
     }
 
     let itemRefs = { ...collections, ...manifests };
-    this.#items = this.#itemIds.map((id) => {
-      return { id, ...itemRefs[id] } || {};
+    this.#items = this.#items.map((item) => {
+      return { id: item.id, ...itemRefs[item.id] };
     });
   };
 
