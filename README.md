@@ -13,13 +13,13 @@
 
 - `NODE_ENV`: set to `development` to trigger stdout logging. set to `production` to avoid building `devDependencies`
 - `COUCH`: an internal couch URL (i.e. in development, requires VPN access)
-- `JWT_KEY`: the JWT key that can be used to verify the signature of Bearer tokens, i.e. whatever [auth.canadiana.ca](https://auth.canadiana.ca/) is using
+- `JWT_SECRET`: the JWT secret in use by [amsa](https://github.com/crkn-rcdr/amsa)
 
 The following optional environment variable can be set:
 
 - `AUTHLESS`: set this to anything, and `lapin` won't check for an Authorization header with a Bearer token.
 
-The default docker-compose files set `NODE_ENV` and `AUTHLESS`. You will need to supply a `docker-compose.override.yml` file with `JWT_KEY` and `COUCH` set. See `docker-compose.override.example.yml` for more.
+The default docker-compose files set `NODE_ENV` and `AUTHLESS`. You will need to supply a `docker-compose.override.yml` file with `JWT_SECRET` and `COUCH` set. See `docker-compose.override.example.yml` for more.
 
 ## Current defaults and magic numbers
 

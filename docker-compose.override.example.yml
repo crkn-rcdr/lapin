@@ -3,5 +3,5 @@ version: "3"
 services:
   lapin:
     environment:
-      - JWT_KEY=whateverTheJWTKeyIs
+      - JWT_SECRET=amsaJWTsecret
       - COUCH=anInternalCouchURL # upholstery is unsupported as of right now

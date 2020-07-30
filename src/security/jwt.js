@@ -1,5 +1,5 @@
 const env = require("require-env");
-const key = env.require("JWT_KEY");
+const key = env.require("JWT_SECRET");
 const nJwt = require("njwt");
 
 module.exports = (req, _scopes, _schema) => {
