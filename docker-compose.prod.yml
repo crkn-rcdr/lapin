@@ -2,6 +2,15 @@ version: "3"
 
 services:
   lapin:
-    build: .
+    build:
+      context: .
+      args:
+        node_env: production
     image: lapin:prod
     command: yarn run start
+    networks:
+      access-platform:
+        ipv4_address: 172.30.0.9
+networks:
+  access-platform:
+    external: true

@@ -2,7 +2,10 @@ version: "3"
 
 services:
   lapin:
-    build: .
+    build:
+      context: .
+      args:
+        node_env: development
     image: lapin:dev
     container_name: lapin
     command: yarn run dev
@@ -13,7 +16,6 @@ services:
       - ./src:/lapin/src
       - ./spec:/lapin/spec
     environment:
-      - NODE_ENV=development
       - AUTHLESS=1
 networks:
   access-platform:

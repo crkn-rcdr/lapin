@@ -7,7 +7,7 @@
     "start": "node .",
     "dev": "yarn exec nodemon -w src -x 'yarn run start'",
     "docker:dev": "docker-compose -f docker-compose.dev.yml -f docker-compose.override.yml up --build",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml build"
+    "docker:prod": "docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up --build"
   },
   "repository": "https://github.com/crkn-rcdr/lapin",
   "author": "Sascha Adler <sadler@crkn.ca>",
