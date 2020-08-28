@@ -41,7 +41,7 @@ class Manifest {
   #loadParents = async () => {
     let rows;
     try {
-      rows = await viewResultsFromKeys(Manifest.#DB_NAME, "access", "items", [
+      rows = await viewResultsFromKeys("Collection", "access", "items", [
         this.#id,
       ]);
     } catch (error) {
@@ -60,7 +60,7 @@ class Manifest {
   #loadCanvases = async () => {
     let rows;
     try {
-      rows = await viewResultsFromKeys("canvas", "null", "_all_docs", keys);
+      rows = await viewResultsFromKeys("canvas", "null", "_all_docs", this.#id);
     } catch (error) {
       throw error;
     }
