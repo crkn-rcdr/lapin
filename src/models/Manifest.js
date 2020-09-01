@@ -11,7 +11,7 @@ class Manifest {
   #ocrPdf;
   #type;
   #freezeParameters;
-  #canvases = [];
+  #canvases;
   #parents = [];
 
   constructor(id) {
@@ -41,7 +41,7 @@ class Manifest {
   #loadParents = async () => {
     let rows;
     try {
-      rows = await viewResultsFromKeys("Collection", "access", "items", [
+      rows = await viewResultsFromKeys("collection", "access", "items", [
         this.#id,
       ]);
     } catch (error) {
@@ -68,8 +68,10 @@ class Manifest {
     this.#canvases = rows.map((row) => {
       return {
         id: row.id,
-        slug: row.value.slug,
         label: multiTextValueToSingle(row.value.label),
+        master: multiTextValueToSingle(row.value.master),
+        orphan: row.orphan,
+        source: multiTextValueToSingle(row.value.source),
       };
     });
   };
