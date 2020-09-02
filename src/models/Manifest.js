@@ -1,6 +1,6 @@
 const { NotFoundError } = require("../errors");
 const { getDocument, viewResultsFromKeys } = require("../resources/couch");
-const { multiTextValueToSingle } = require("../util");
+const { multiTextValueToSingle, singleTextValueToMulti } = require("../util");
 
 class Manifest {
   static #DB_NAME = "manifest";
@@ -69,9 +69,9 @@ class Manifest {
       return {
         id: row.id,
         label: multiTextValueToSingle(row.value.label),
-        master: multiTextValueToSingle(row.value.master),
+        master: singleTextValueToMulti(row.value.master),
         orphan: row.orphan,
-        source: multiTextValueToSingle(row.value.source),
+        source: singleTextValueToMulti(row.value.source),
       };
     });
   };
