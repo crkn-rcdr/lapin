@@ -57,7 +57,7 @@ class Manifest {
     });
   };
   //loads canvases
-  #loadCanvases = async () => {
+  /*  #loadCanvases = async () => {
     let rows;
     try {
       rows = await viewResultsFromKeys("canvas", "null", "_all_docs", this.#id);
@@ -74,10 +74,10 @@ class Manifest {
         source: singleTextValueToMulti(row.value.source),
       };
     });
-  };
+  }; */
   async loadCanvasItems() {
     try {
-      await Promise.all([this.#loadParents(), this.#loadCanvases()]);
+      await Promise.all([this.#loadParents()]);
     } catch (error) {
       throw error;
     }
