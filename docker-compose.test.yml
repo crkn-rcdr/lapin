@@ -1,0 +1,8 @@
+version: "3"
+
+services:
+  couch:
+    image: couchdb:1.7
+    container_name: lapin_test_couch
+    ports:
+      - "22222:5984"
