@@ -20,7 +20,7 @@
     "express-openapi-validator": "^3.12.9",
     "morgan": "^1.10.0",
     "njwt": "^1.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "require-env": "^0.2.1",
     "swagger-ui-express": "^4.1.4"
   },
