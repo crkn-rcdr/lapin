@@ -73,13 +73,34 @@ describe("Collection routes", () => {
     it("returns information about the slug when found", async () => {
       const slugInfo = await lapin.get("/v1/collection/slug/series");
       slugInfo.status.should.equal(200);
-      slugInfo.body.should.deep.equal({});
+      slugInfo.body.should.deep.equal({
+        id: "series",
+        isAlias: false,
+        label: {
+          en: ["Series collection"],
+        },
+        noid: "69429/s0028pc2v81f",
+        type: "collection",
+      });
     });
 
     it("returns 404 when the slug is not found", async () => {
       const noSlug = await lapin.get("/v1/collection/slug/not-a-slug");
-      console.log(noSlug);
       noSlug.status.should.equal(404);
+    });
+  });
+
+  describe("POST /collection/slug/search/{prefix}", () => {
+    it("returns the slugs that start with the prefix", async () => {
+      const slugList = await lapin.post("/v1/collection/slug/search/s");
+      slugList.status.should.equal(200);
+      slugList.body.should.deep.equal(["series"]);
+    });
+
+    it("returns an empty list if no slugs start with the prefix", async () => {
+      const slugList = await lapin.post("/v1/collection/slug/search/haha");
+      slugList.status.should.equal(200);
+      slugList.body.should.deep.equal([]);
     });
   });
 });

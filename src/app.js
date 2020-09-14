@@ -40,7 +40,7 @@ const buildApp = async () => {
   app.use((err, _req, res, _next) => {
     let status = err.status || 500;
     let obj = { message: err.message, status };
-    if (nodeEnv === "development") obj.stack = err.stack;
+    if (nodeEnv !== "production") obj.stack = err.stack;
     res.status(status).json(obj);
   });
 
