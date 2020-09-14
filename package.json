@@ -2,11 +2,11 @@
   "name": "lapin",
   "version": "1.0.0",
   "description": "Canadiana Access Platform API server",
-  "main": "src/server.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "node .",
     "dev": "yarn exec nodemon -w src -x 'yarn run start'",
-    "test": "yarn exec wait-on http://localhost:22222/ && AUTHLESS=1 COUCH=http://localhost:22222/ yarn exec -- mocha --recursive --watch --extension js,json test/",
+    "test": "yarn exec wait-on http://localhost:22222/ && NODE_ENV=test AUTHLESS=1 COUCH=http://localhost:22222/ yarn exec -- mocha --recursive --watch --extension js,json test/",
     "docker:dev": "docker-compose -f docker-compose.dev.yml -f docker-compose.override.yml up --build",
     "docker:prod": "docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up --build",
     "docker:test": "docker-compose -f docker-compose.test.yml up -d; yarn run test",

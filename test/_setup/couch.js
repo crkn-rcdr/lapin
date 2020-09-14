@@ -1,7 +1,7 @@
 const TestDeployer = require("kivik/src/TestDeployer");
 
 const couch = process.env.COUCH || "http://localhost:22222/";
-let deployer = new TestDeployer(__dirname + "/../spec/Databases", couch);
+const deployer = new TestDeployer(__dirname + "/../../spec/Databases", couch);
 
 before(async () => {
   await deployer.load();
