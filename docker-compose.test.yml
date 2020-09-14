@@ -1,8 +1,23 @@
 version: "3"
 
 services:
+  lapin:
+    build:
+      context: .
+      args:
+        node_env: test
+    image: lapin:test
+    container_name: lapin
+    command: yarn run test
+    volumes:
+      - ./src:/lapin/src
+      - ./test:/lapin/test
+      - ./spec:/lapin/spec
+    environment:
+      - AUTHLESS=1
+      - COUCH=http://couch:5984
   couch:
     image: couchdb:1.7
     container_name: lapin_test_couch
-    ports:
-      - "22222:5984"
+    logging:
+      driver: none
