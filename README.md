@@ -30,3 +30,7 @@ The default docker-compose files set `NODE_ENV` and `AUTHLESS`. You will need to
 ## Developing off of the API
 
 `lapin` exposes a website built automatically from the API specification at [`/docs`](https://api.canadiana.ca/docs), as well as the API specification in JSON format at [`/spec`](https://api.canadiana.ca/spec).
+
+## Integration testing
+
+Run `yarn run docker:test` to run the test suite in `test/`.
