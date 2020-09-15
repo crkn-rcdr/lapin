@@ -1,5 +1,5 @@
 const env = require("require-env");
-const key = env.require("JWT_SECRET");
+const key = process.env.AUTHLESS ? process.env.JWT_SECRET : "";
 const nJwt = require("njwt");
 
 module.exports = (req, _scopes, _schema) => {

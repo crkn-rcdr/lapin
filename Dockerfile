@@ -12,6 +12,7 @@ COPY --chown=node:node package.json yarn.lock ./
 RUN yarn install
 
 COPY --chown=node:node spec spec
+COPY --chown=node:node test test
 COPY --chown=node:node src src
 
 EXPOSE 8081
