@@ -24,11 +24,9 @@ class Slug {
     try {
       row = await viewResultFromKey(this.#type, "access", "slug", this.#id);
     } catch (error) {
-      (error) => {
-        throw error.status === 404
-          ? new NotFoundError(`Slug ${this.#id} not found.`)
-          : error;
-      };
+      throw error.status === 404
+        ? new NotFoundError(`Slug ${this.#id} not found.`)
+        : error;
     }
     this.#noid = row.id;
     this.#label = row.value.label;
