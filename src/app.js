@@ -4,6 +4,7 @@ const env = require("require-env");
 const path = require("path");
 const bodyParser = require("body-parser");
 const http = require("http");
+const { MethodNotHandled } = require("./errors");
 const { ping } = require("./resources/couch");
 const swagger = require("swagger-ui-express");
 const { OpenApiValidator } = require("express-openapi-validator");
@@ -27,9 +28,27 @@ const buildApp = async () => {
 
   const validator = new OpenApiValidator({
     apiSpec,
-    // validateResponses: nodeEnv === "test", NOTE: this is doing something weird
+    // TODO: this is doing something weird. I'd like to figure it out
+    // validateResponses: nodeEnv === "test",
     validateResponses: false,
-    operationHandlers: path.join(__dirname, "routes"),
+    operationHandlers: {
+      basePath: path.join(__dirname, "routes"),
+      resolver: (basePath, route) => {
+        const method = route.schema["x-eov-operation-id"];
+        const modulePath = path.join(
+          basePath,
+          route.schema["x-eov-operation-handler"]
+        );
+        const handler = require(modulePath);
+        if (handler && handler[method]) {
+          return handler[method];
+        } else {
+          return (_req, _res, next) => {
+            next(new MethodNotHandled());
+          };
+        }
+      },
+    },
     validateSecurity: env.contains("AUTHLESS")
       ? false
       : { handlers: { tokenAuth: tokenHandler } },
