@@ -13,10 +13,16 @@ class NotFoundError extends HttpError {
   }
 }
 
+class MethodNotHandled extends HttpError {
+  constructor() {
+    super(501, "This method is not yet handled.");
+  }
+}
+
 class ResourceUnreachableError extends HttpError {
   constructor() {
     super(503, "An internal resource is unreachable.");
   }
 }
 
-module.exports = { NotFoundError, ResourceUnreachableError };
+module.exports = { NotFoundError, MethodNotHandled, ResourceUnreachableError };

@@ -16,6 +16,8 @@ services:
     environment:
       - AUTHLESS=1
       - COUCH=http://couch:5984
+      - SHELL=/bin/sh
+    tty: true
   couch:
     image: couchdb:1.7
     container_name: lapin_test_couch
