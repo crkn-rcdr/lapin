@@ -103,6 +103,22 @@ class Collection {
     };
   }
 
+  static async getParents(noid) {
+    let rows;
+    try {
+      rows = await viewResultsFromKeys("collection", "access", "items", [noid]);
+    } catch (error) {
+      throw error;
+    }
+    let items = {};
+    rows.map((row) => {
+      items[row.id] = row.value;
+      row.value.slug = row.value.slug;
+      row.value.label = multiTextValueToSingle(row.value.label);
+    });
+    console.log("check parents", items);
+    return items;
+  }
   // returns the labels of a list of collection ids
   static async basicLookup(collectionIds) {
     if (collectionIds.length === 0) return {};
