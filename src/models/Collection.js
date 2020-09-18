@@ -6,7 +6,7 @@ const Slug = require("./Slug");
 
 const DB_NAME = "collection";
 
-lookup = async function lookup(ids) {
+async function lookup(ids) {
   if (ids.length === 0) return {};
 
   let rows;
@@ -23,7 +23,7 @@ lookup = async function lookup(ids) {
     collections[row.id] = row.value;
   });
   return collections;
-};
+}
 
 async function isNoid(noid) {
   return noid.startsWith("69429/s");
