@@ -41,6 +41,7 @@ describe("Collection routes", () => {
             type: "manifest",
           },
         ],
+        itemCount: 2,
         parents: [
           {
             id: "69429/s0028pc2v60r",
@@ -52,6 +53,15 @@ describe("Collection routes", () => {
           },
         ],
       });
+    });
+
+    it("does not respond with an unordered collection's item list", async () => {
+      const unorderedCollection = await lapin.get(
+        "/v1/collection/69429%2fs0028pc2v60r"
+      );
+      unorderedCollection.status.should.equal(200);
+      unorderedCollection.body.itemCount.should.equal(2);
+      unorderedCollection.body.should.not.have.property("items");
     });
 
     it("returns a 404 when the id cannot be found", async () => {

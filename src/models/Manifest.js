@@ -1,103 +1,76 @@
 const { NotFoundError } = require("../errors");
 const { getDocument, viewResultsFromKeys } = require("../resources/couch");
-const { multiTextValueToSingle, singleTextValueToMulti } = require("../util");
+const { multiTextValueToSingle } = require("../util");
+const Collection = require("./Collection");
+const Slug = require("./Slug");
 
-class Manifest {
-  static #DB_NAME = "manifest";
-  #id;
-  #slug;
-  #label;
-  #summary;
-  #ocrPdf;
-  #type;
-  #freezeParameters;
-  #canvases;
-  #parents = [];
+const DB_NAME = "manifest";
 
-  constructor(id) {
-    this.#id = id;
+async function fetch(id) {
+  let document;
+  try {
+    document = await getDocument(DB_NAME, id);
+  } catch (error) {
+    throw error.status === 404
+      ? new NotFoundError(`Manifest ${id} not found.`)
+      : error;
   }
-  get id() {
-    this.#id;
-  }
-  async initialize() {
-    let document;
-    try {
-      document = await getDocument(Manifest.#DB_NAME, this.#id);
-    } catch (error) {
-      throw error.status === 404
-        ? new NotFoundError(`Manifest ${this.#id} not found.`)
-        : error;
-    }
-    this.#slug = document.slug;
-    this.#label = multiTextValueToSingle(document.label);
-    if (document.summary)
-      this.#summary = multiTextValueToSingle(document.summary);
-    this.#ocrPdf = document.ocrPdf;
-    this.#type = document.type;
-    this.#canvases = document.canvases;
-  }
-  //load Parents
-  loadParents = async () => {
-    let rows;
-    try {
-      rows = await viewResultsFromKeys("collection", "access", "items", [
-        this.#id,
-      ]);
-    } catch (error) {
-      throw error;
-    }
 
-    this.#parents = rows.map((row) => {
-      return {
-        id: row.id,
-        slug: row.value.slug,
-        label: multiTextValueToSingle(row.value.label),
-      };
-    });
+  let rv = {
+    id,
+    slug: document.slug,
+    label: multiTextValueToSingle(document.label),
+    type: document.type,
+    parents: await Collection.loadParents(id),
   };
 
-  toJSON() {
-    return {
-      id: this.#id,
-      slug: this.#slug,
-      label: this.#label,
-      summary: this.#summary,
-      ocrPdf: this.#ocrPdf,
-      canvases: this.#canvases,
-      type: this.#type,
-      parents: this.#parents,
-    };
-  }
-  // returns the labels of a list of manifest ids
-  static async basicLookup(manifestIds) {
-    if (manifestIds.length === 0) return {};
-
-    let rows;
-    try {
-      rows = await viewResultsFromKeys(
-        Manifest.#DB_NAME,
-        "access",
-        "basic",
-        manifestIds
-      );
-    } catch (error) {
-      throw error;
-    }
-
-    let manifests = {};
-    rows.map((row) => {
-      row.value.label = multiTextValueToSingle(row.value.label);
-      row.value.manifestType = row.value.type;
-      row.value.type = "manifest";
-      manifests[row.id] = row.value;
-    });
-    return manifests;
+  if (document.type === "multicanvas") {
+    rv.canvases = document.canvases;
   }
 
-  static isNoid(noid) {
-    return noid.startsWith("69429/m");
-  }
+  return rv;
 }
 
-module.exports = Manifest;
+module.exports.fetch = fetch;
+
+async function lookup(ids) {
+  if (ids.length === 0) return {};
+
+  let rows;
+  try {
+    rows = await viewResultsFromKeys(DB_NAME, "access", "basic", ids);
+  } catch (error) {
+    throw error;
+  }
+
+  let manifests = {};
+  rows.map((row) => {
+    row.value.label = multiTextValueToSingle(row.value.label);
+    row.value.manifestType = row.value.type;
+    row.value.type = "manifest";
+    manifests[row.id] = row.value;
+  });
+  return manifests;
+}
+
+module.exports.lookup = lookup;
+
+async function isNoid(noid) {
+  return noid.startsWith("69429/m");
+}
+
+module.exports.isNoid = isNoid;
+
+async function resolveSlug(id) {
+  let slug = await Slug.info(DB_NAME, id);
+  slug.type = "manifest";
+  return slug;
+}
+
+module.exports.resolveSlug = resolveSlug;
+
+async function searchSlug(prefix, limit = 10) {
+  return await Slug.search(DB_NAME, prefix, limit);
+}
+
+module.exports.searchSlug = searchSlug;

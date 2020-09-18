@@ -45,4 +45,39 @@ describe("Manifest routes", () => {
       });
     });
   });
+
+  describe("GET /manifest/slug/{id}", () => {
+    it("returns information about the slug when found", async () => {
+      const slugInfo = await lapin.get("/v1/manifest/slug/monograph");
+      slugInfo.status.should.equal(200);
+      slugInfo.body.should.deep.equal({
+        id: "monograph",
+        isAlias: false,
+        label: {
+          en: ["Monograph"],
+        },
+        noid: "69429/m0000000002k",
+        type: "manifest",
+      });
+    });
+
+    it("returns 404 when the slug is not found", async () => {
+      const noSlug = await lapin.get("/v1/manifest/slug/not-a-slug");
+      noSlug.status.should.equal(404);
+    });
+  });
+
+  describe("POST /manifest/slug/search/{prefix}", () => {
+    it("returns the slugs that start with the prefix", async () => {
+      const slugList = await lapin.post("/v1/manifest/slug/search/m");
+      slugList.status.should.equal(200);
+      slugList.body.should.deep.equal(["manifest1", "monograph"]);
+    });
+
+    it("returns an empty list if no slugs start with the prefix", async () => {
+      const slugList = await lapin.post("/v1/collection/slug/search/haha");
+      slugList.status.should.equal(200);
+      slugList.body.should.deep.equal([]);
+    });
+  });
 });

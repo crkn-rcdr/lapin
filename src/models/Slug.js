@@ -1,59 +1,34 @@
 const { NotFoundError } = require("../errors");
 const { viewResultFromKey, searchView } = require("../resources/couch");
 
-class Slug {
-  #type;
-  #id;
-  #noid;
-  #label;
-  #isAlias;
-  #aliasOf;
-
-  constructor(type, id) {
-    this.#type = type;
-    this.#id = id;
-    // if the type names and the db names were different, we'd set this.#db here
+async function info(dbName, id) {
+  let row;
+  try {
+    row = await viewResultFromKey(dbName, "access", "slug", id);
+  } catch (error) {
+    throw error.status === 404
+      ? new NotFoundError(`Slug ${id} not found.`)
+      : error;
   }
-
-  get id() {
-    this.#id;
-  }
-
-  async initialize() {
-    let row;
-    try {
-      row = await viewResultFromKey(this.#type, "access", "slug", this.#id);
-    } catch (error) {
-      throw error.status === 404
-        ? new NotFoundError(`Slug ${this.#id} not found.`)
-        : error;
-    }
-    this.#noid = row.id;
-    this.#label = row.value.label;
-    this.#isAlias = row.value.isAlias;
-    this.#aliasOf = row.value.aliasOf;
-  }
-
-  toJSON() {
-    return {
-      id: this.#id,
-      noid: this.#noid,
-      label: this.#label,
-      type: this.#type,
-      isAlias: this.#isAlias,
-      aliasOf: this.#aliasOf,
-    };
-  }
-
-  static async search(type, prefix, limit = 10) {
-    let results;
-    try {
-      results = await searchView(type, "access", "slug", prefix, limit);
-    } catch (error) {
-      throw error;
-    }
-    return results;
-  }
+  return {
+    id,
+    noid: row.id,
+    label: row.value.label,
+    isAlias: row.value.isAlias,
+    aliasOf: row.value.aliasOf,
+  };
 }
 
-module.exports = Slug;
+module.exports.info = info;
+
+async function search(dbName, prefix, limit) {
+  let results;
+  try {
+    results = await searchView(dbName, "access", "slug", prefix, limit);
+  } catch (error) {
+    throw error;
+  }
+  return results;
+}
+
+module.exports.search = search;

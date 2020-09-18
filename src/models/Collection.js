@@ -1,71 +1,76 @@
-const Manifest = require("./Manifest");
 const { NotFoundError } = require("../errors");
 const { multiTextValueToSingle } = require("../util");
 const { getDocument, viewResultsFromKeys } = require("../resources/couch");
+const Manifest = require("./Manifest");
+const Slug = require("./Slug");
 
-class Collection {
-  static #DB_NAME = "collection";
+const DB_NAME = "collection";
 
-  #id;
-  #slug;
-  #label;
-  #summary;
-  #ordered;
-  #public;
-  #items;
-  #parents = [];
+lookup = async function lookup(ids) {
+  if (ids.length === 0) return {};
 
-  constructor(id) {
-    this.#id = id;
+  let rows;
+  try {
+    rows = await viewResultsFromKeys("collection", "access", "basic", ids);
+  } catch (error) {
+    throw error;
   }
 
-  get id() {
-    this.#id;
+  let collections = {};
+  rows.map((row) => {
+    row.value.label = multiTextValueToSingle(row.value.label);
+    row.value.type = "collection";
+    collections[row.id] = row.value;
+  });
+  return collections;
+};
+
+module.exports.lookup = lookup;
+
+async function isNoid(noid) {
+  return noid.startsWith("69429/s");
+}
+
+module.exports.isNoid = isNoid;
+
+async function resolveSlug(id) {
+  let slug = await Slug.info(DB_NAME, id);
+  slug.type = "collection";
+  return slug;
+}
+
+module.exports.resolveSlug = resolveSlug;
+
+async function searchSlug(prefix, limit = 10) {
+  return await Slug.search(DB_NAME, prefix, limit);
+}
+
+module.exports.searchSlug = searchSlug;
+
+async function loadParents(id) {
+  let rows;
+  try {
+    rows = await viewResultsFromKeys(DB_NAME, "access", "items", [id]);
+  } catch (error) {
+    throw error;
   }
 
-  async initialize() {
-    let document;
-    try {
-      document = await getDocument(Collection.#DB_NAME, this.#id);
-    } catch (error) {
-      throw error.status === 404
-        ? new NotFoundError(`Collection ${this.#id} not found.`)
-        : error;
-    }
-    this.#slug = document.slug;
-    this.#label = multiTextValueToSingle(document.label);
-    if (document.summary)
-      this.#summary = multiTextValueToSingle(document.summary);
-    this.#ordered = document.ordered;
-    this.#public = "public" in document;
-    this.#items = document.items;
-  }
+  return rows.map((row) => {
+    return {
+      id: row.id,
+      slug: row.value.slug,
+      label: multiTextValueToSingle(row.value.label),
+    };
+  });
+}
 
-  #loadParents = async () => {
-    let rows;
-    try {
-      rows = await viewResultsFromKeys(Collection.#DB_NAME, "access", "items", [
-        this.#id,
-      ]);
-    } catch (error) {
-      throw error;
-    }
+module.exports.loadParents = loadParents;
 
-    this.#parents = rows.map((row) => {
-      return {
-        id: row.id,
-        slug: row.value.slug,
-        label: multiTextValueToSingle(row.value.label),
-      };
-    });
-  };
-
-  #loadItems = async () => {
-    let itemIds = this.#items.map((item) => item.id);
-    let collectionLookup = Collection.basicLookup(
-      itemIds.filter(Collection.isNoid)
-    );
-    let manifestLookup = Manifest.basicLookup(itemIds.filter(Manifest.isNoid));
+async function fetch(id) {
+  const loadItems = async function loadItems(items) {
+    let itemIds = items.map((item) => item.id);
+    let collectionLookup = lookup(itemIds.filter(isNoid));
+    let manifestLookup = Manifest.lookup(itemIds.filter(Manifest.isNoid));
     let collections, manifests;
     try {
       [collections, manifests] = await Promise.all([
@@ -77,76 +82,35 @@ class Collection {
     }
 
     let itemRefs = { ...collections, ...manifests };
-    this.#items = this.#items.map((item) => {
+    return items.map((item) => {
       return { id: item.id, ...itemRefs[item.id] };
     });
   };
 
-  async loadParentsAndItems() {
-    try {
-      await Promise.all([this.#loadParents(), this.#loadItems()]);
-    } catch (error) {
-      throw error;
-    }
+  let document;
+  try {
+    document = await getDocument(DB_NAME, id);
+  } catch (error) {
+    throw error.status === 404
+      ? new NotFoundError(`Collection ${id} not found.`)
+      : error;
   }
 
-  toJSON() {
-    return {
-      id: this.#id,
-      slug: this.#slug,
-      label: this.#label,
-      summary: this.#summary,
-      ordered: this.#ordered,
-      public: this.#public,
-      items: this.#items,
-      parents: this.#parents,
-    };
-  }
+  let collection = {
+    id,
+    slug: document.slug,
+    label: multiTextValueToSingle(document.label),
+    ordered: document.ordered,
+    public: "public" in document,
+    itemCount: document.items.length,
+    parents: await loadParents(id),
+  };
 
-  static async getParents(noid) {
-    let rows;
-    try {
-      rows = await viewResultsFromKeys("collection", "access", "items", [noid]);
-    } catch (error) {
-      throw error;
-    }
-    let items = {};
-    rows.map((row) => {
-      items[row.id] = row.value;
-      row.value.slug = row.value.slug;
-      row.value.label = multiTextValueToSingle(row.value.label);
-    });
-    console.log("check parents", items);
-    return items;
-  }
-  // returns the labels of a list of collection ids
-  static async basicLookup(collectionIds) {
-    if (collectionIds.length === 0) return {};
+  if (document.summary)
+    collection.summary = multiTextValueToSingle(document.summary);
+  if (document.ordered) collection.items = await loadItems(document.items);
 
-    let rows;
-    try {
-      rows = await viewResultsFromKeys(
-        "collection",
-        "access",
-        "basic",
-        collectionIds
-      );
-    } catch (error) {
-      throw error;
-    }
-
-    let collections = {};
-    rows.map((row) => {
-      row.value.label = multiTextValueToSingle(row.value.label);
-      row.value.type = "collection";
-      collections[row.id] = row.value;
-    });
-    return collections;
-  }
-
-  static isNoid(noid) {
-    return noid.startsWith("69429/s");
-  }
+  return collection;
 }
 
-module.exports = Collection;
+module.exports.fetch = fetch;
