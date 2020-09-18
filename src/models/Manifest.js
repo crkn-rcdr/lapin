@@ -31,8 +31,6 @@ async function fetch(id) {
   return rv;
 }
 
-module.exports.fetch = fetch;
-
 async function lookup(ids) {
   if (ids.length === 0) return {};
 
@@ -53,13 +51,9 @@ async function lookup(ids) {
   return manifests;
 }
 
-module.exports.lookup = lookup;
-
 async function isNoid(noid) {
   return noid.startsWith("69429/m");
 }
-
-module.exports.isNoid = isNoid;
 
 async function resolveSlug(id) {
   let slug = await Slug.info(DB_NAME, id);
@@ -67,10 +61,14 @@ async function resolveSlug(id) {
   return slug;
 }
 
-module.exports.resolveSlug = resolveSlug;
-
 async function searchSlug(prefix, limit = 10) {
   return await Slug.search(DB_NAME, prefix, limit);
 }
 
-module.exports.searchSlug = searchSlug;
+Object.assign(module.exports, {
+  fetch,
+  lookup,
+  isNoid,
+  resolveSlug,
+  searchSlug,
+});

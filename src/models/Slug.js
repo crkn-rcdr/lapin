@@ -19,8 +19,6 @@ async function info(dbName, id) {
   };
 }
 
-module.exports.info = info;
-
 async function search(dbName, prefix, limit) {
   let results;
   try {
@@ -31,4 +29,4 @@ async function search(dbName, prefix, limit) {
   return results;
 }
 
-module.exports.search = search;
+Object.assign(module.exports, { info, search });

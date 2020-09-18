@@ -25,13 +25,9 @@ lookup = async function lookup(ids) {
   return collections;
 };
 
-module.exports.lookup = lookup;
-
 async function isNoid(noid) {
   return noid.startsWith("69429/s");
 }
-
-module.exports.isNoid = isNoid;
 
 async function resolveSlug(id) {
   let slug = await Slug.info(DB_NAME, id);
@@ -39,13 +35,9 @@ async function resolveSlug(id) {
   return slug;
 }
 
-module.exports.resolveSlug = resolveSlug;
-
 async function searchSlug(prefix, limit = 10) {
   return await Slug.search(DB_NAME, prefix, limit);
 }
-
-module.exports.searchSlug = searchSlug;
 
 async function loadParents(id) {
   let rows;
@@ -63,8 +55,6 @@ async function loadParents(id) {
     };
   });
 }
-
-module.exports.loadParents = loadParents;
 
 async function fetch(id) {
   const loadItems = async function loadItems(items) {
@@ -113,4 +103,11 @@ async function fetch(id) {
   return collection;
 }
 
-module.exports.fetch = fetch;
+Object.assign(module.exports, {
+  lookup,
+  isNoid,
+  resolveSlug,
+  searchSlug,
+  loadParents,
+  fetch,
+});
