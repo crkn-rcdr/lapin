@@ -6,7 +6,7 @@ module.exports = {
     let manifest = new Manifest(req.params.id);
     manifest
       .initialize()
-      .then(() => manifest.loadCanvasItems())
+      .then(() => manifest.loadParents())
       .then(() => res.json(manifest))
       .catch((error) => next(error));
   },

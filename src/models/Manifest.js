@@ -35,10 +35,10 @@ class Manifest {
       this.#summary = multiTextValueToSingle(document.summary);
     this.#ocrPdf = document.ocrPdf;
     this.#type = document.type;
-    this.#freezeParameters = document.freezeParameters;
+    this.#canvases = document.canvases;
   }
   //load Parents
-  #loadParents = async () => {
+  loadParents = async () => {
     let rows;
     try {
       rows = await viewResultsFromKeys("collection", "access", "items", [
@@ -56,32 +56,6 @@ class Manifest {
       };
     });
   };
-  //loads canvases
-  /*  #loadCanvases = async () => {
-    let rows;
-    try {
-      rows = await viewResultsFromKeys("canvas", "null", "_all_docs", this.#id);
-    } catch (error) {
-      throw error;
-    }
-
-    this.#canvases = rows.map((row) => {
-      return {
-        id: row.id,
-        label: multiTextValueToSingle(row.value.label),
-        master: singleTextValueToMulti(row.value.master),
-        orphan: row.orphan,
-        source: singleTextValueToMulti(row.value.source),
-      };
-    });
-  }; */
-  async loadCanvasItems() {
-    try {
-      await Promise.all([this.#loadParents()]);
-    } catch (error) {
-      throw error;
-    }
-  }
 
   toJSON() {
     return {
@@ -92,7 +66,6 @@ class Manifest {
       ocrPdf: this.#ocrPdf,
       canvases: this.#canvases,
       type: this.#type,
-      freezeParameters: this.#freezeParameters,
       parents: this.#parents,
     };
   }
