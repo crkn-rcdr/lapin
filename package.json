@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node .",
     "dev": "yarn exec nodemon -w src -x 'yarn run start'",
-    "test": "yarn exec wait-on http://couch:5984/ && yarn exec -- chokidar \"spec/**/*.js\" \"spec/**/*.json\" \"src/**/*.js\" \"test/**/*.js\" -c \"yarn run testrun\" --silent",
+    "test": "yarn exec wait-on http://couch:5984/ && yarn exec -- chokidar \"spec/**/*.js\" \"spec/**/*.json\" \"src/**/*.js\" \"test/**/*.js\" -c \"yarn run testrun\" --silent --initial",
     "testrun": "yarn exec -- mocha --recursive --timeout 99999 test/",
     "docker:dev": "docker-compose -f docker-compose.dev.yml -f docker-compose.override.yml up --build",
     "docker:prod": "docker-compose -f docker-compose.prod.yml -f docker-compose.override.yml up --build",
