@@ -91,7 +91,7 @@ async function fetch(id) {
     slug: document.slug,
     label: multiTextValueToSingle(document.label),
     ordered: document.ordered,
-    public: "public" in document,
+    public: document.public,
     itemCount: document.items.length,
     parents: await loadParents(id),
   };

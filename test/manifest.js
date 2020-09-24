@@ -18,6 +18,7 @@ describe("Manifest routes", () => {
         slug: "monograph",
         label: { en: "Monograph" },
         type: "multicanvas",
+        public: "2020-09-09T20:20:20Z",
         canvases: [
           {
             id: "69429/c0v11vd6pm9c",

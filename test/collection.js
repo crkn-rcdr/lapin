@@ -20,7 +20,7 @@ describe("Collection routes", () => {
         slug: "series",
         label: { en: "Series collection" },
         ordered: true,
-        public: false,
+        public: "2020-09-09T20:20:20Z",
         items: [
           {
             id: "69429/m00000000035",
@@ -28,6 +28,7 @@ describe("Collection routes", () => {
               en: "First issue",
             },
             manifestType: "multicanvas",
+            public: "2020-09-09T20:20:20Z",
             slug: "issue1",
             type: "manifest",
           },
@@ -37,6 +38,7 @@ describe("Collection routes", () => {
               en: "Second issue",
             },
             manifestType: "multicanvas",
+            public: "2020-09-09T20:20:20Z",
             slug: "issue2",
             type: "manifest",
           },

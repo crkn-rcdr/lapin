@@ -21,6 +21,7 @@ async function fetch(id) {
     slug: document.slug,
     label: multiTextValueToSingle(document.label),
     type: document.type,
+    public: document.public,
     parents: await Collection.loadParents(id),
   };
 
