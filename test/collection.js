@@ -60,7 +60,7 @@ describe("Collection routes", () => {
         "/v1/collection/69429%2fs0028pc2v60r"
       );
       unorderedCollection.status.should.equal(200);
-      unorderedCollection.body.itemCount.should.equal(2);
+      unorderedCollection.body.itemCount.should.equal(3);
       unorderedCollection.body.should.not.have.property("items");
     });
 

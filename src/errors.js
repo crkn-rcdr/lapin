@@ -7,6 +7,18 @@ class HttpError extends Error {
   }
 }
 
+class RequestError extends HttpError {
+  constructor(message) {
+    super(400, message);
+  }
+}
+
+class UnauthorizedError extends HttpError {
+  constructor(message) {
+    super(401, message);
+  }
+}
+
 class NotFoundError extends HttpError {
   constructor(message) {
     super(404, message);
@@ -25,4 +37,10 @@ class ResourceUnreachableError extends HttpError {
   }
 }
 
-module.exports = { NotFoundError, MethodNotHandled, ResourceUnreachableError };
+module.exports = {
+  RequestError,
+  UnauthorizedError,
+  NotFoundError,
+  MethodNotHandled,
+  ResourceUnreachableError,
+};

@@ -1,5 +1,5 @@
-const { NotFoundError } = require("../errors");
-const { multiTextValueToSingle } = require("../util");
+const { RequestError, NotFoundError } = require("../errors");
+const { multiTextValueToSingle } = require("./_util");
 const { getDocument, viewResultsFromKeys } = require("../resources/couch");
 const Manifest = require("./Manifest");
 const Slug = require("./Slug");
@@ -25,7 +25,7 @@ async function lookup(ids) {
   return collections;
 }
 
-async function isNoid(noid) {
+function isNoid(noid) {
   return noid.startsWith("69429/s");
 }
 
@@ -76,6 +76,10 @@ async function fetch(id) {
       return { id: item.id, ...itemRefs[item.id] };
     });
   };
+
+  if (!isNoid(id)) {
+    throw new RequestError(`${id} is not a valid NOID.`);
+  }
 
   let document;
   try {

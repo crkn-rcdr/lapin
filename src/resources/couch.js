@@ -100,6 +100,10 @@ async function searchView(db, ddoc, view, prefix, limit) {
   return (await response.json()).rows.map((row) => row.key);
 }
 
+async function update(db, ddoc, update, id) {
+  // TODO: build update URL and request it
+}
+
 module.exports = {
   ping,
   getDocument,
