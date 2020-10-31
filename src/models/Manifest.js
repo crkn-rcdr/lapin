@@ -1,12 +1,16 @@
 const { NotFoundError } = require("../errors");
 const { getDocument, viewResultsFromKeys } = require("../resources/couch");
-const { multiTextValueToSingle } = require("../util");
+const { multiTextValueToSingle } = require("./_util");
 const Collection = require("./Collection");
 const Slug = require("./Slug");
 
 const DB_NAME = "manifest";
 
 async function fetch(id) {
+  if (!isNoid(id)) {
+    throw new RequestError(`${id} is not a valid NOID.`);
+  }
+
   let document;
   try {
     document = await getDocument(DB_NAME, id);
@@ -63,6 +67,10 @@ async function resolveSlug(id) {
 
 async function searchSlug(prefix, limit = 10) {
   return await Slug.search(DB_NAME, prefix, limit);
+}
+
+async function unpublish(id) {
+  // TODO: call the unpublish update
 }
 
 Object.assign(module.exports, {

@@ -75,7 +75,7 @@ describe("Manifest routes", () => {
     });
 
     it("returns an empty list if no slugs start with the prefix", async () => {
-      const slugList = await lapin.post("/v1/collection/slug/search/haha");
+      const slugList = await lapin.post("/v1/manifest/slug/search/haha");
       slugList.status.should.equal(200);
       slugList.body.should.deep.equal([]);
     });
