@@ -44,6 +44,10 @@ describe("Manifest routes", () => {
         ],
       });
     });
+    it("returns 404 when the PDF is not found", async () => {
+      const noPdf = await lapin.get("/v1/manifest/69429%2fm08c9r20vk83");
+      noPdf.status.should.equal(404);
+    });
   });
 
   describe("GET /manifest/slug/{id}", () => {
