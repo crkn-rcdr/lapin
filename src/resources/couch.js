@@ -107,7 +107,8 @@ async function update(db, ddoc, update, id) {
     id,
   });
   handleErrors(response);
-  return (await response.json()).rows; //This should return the deleted Id or just the remaining rows?
+  return (await response.json()).rows; //Should the delete call return the remaining rows or the deleted id?
+}
 
 module.exports = {
   ping,
