@@ -20,5 +20,10 @@ router.post("/slug/search/:prefix", (req, res, next) => {
 });
 
 // TODO: have router.delete("/:id") call Manifest.unpublish
+router.delete("/:id", (req, res, next) => {
+  Manifest.unpublish(req.params.id)
+    .then((manifest) => res.json(manifest))
+    .catch((error) => next(error));
+});
 
 module.exports = router;

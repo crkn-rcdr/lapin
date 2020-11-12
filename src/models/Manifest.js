@@ -1,5 +1,5 @@
 const { NotFoundError } = require("../errors");
-const { getDocument, viewResultsFromKeys } = require("../resources/couch");
+const { getDocument, viewResultsFromKeys, update } = require("../resources/couch");
 const { multiTextValueToSingle } = require("./_util");
 const Collection = require("./Collection");
 const Slug = require("./Slug");
@@ -71,6 +71,22 @@ async function searchSlug(prefix, limit = 10) {
 
 async function unpublish(id) {
   // TODO: call the unpublish update
+  if (!isNoid(id)) {
+    return {}
+  }
+  try {
+    
+    let updateresult = await update(DB_NAME, id);
+    //Deleting the public property from the response returned
+    updateresult.public = "";
+    return updateresult
+  }
+  catch (error) {
+    throw error
+    
+  }
+  
+  
 }
 
 Object.assign(module.exports, {
@@ -79,4 +95,5 @@ Object.assign(module.exports, {
   isNoid,
   resolveSlug,
   searchSlug,
+  unpublish
 });
