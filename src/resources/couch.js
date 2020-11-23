@@ -102,6 +102,12 @@ async function searchView(db, ddoc, view, prefix, limit) {
 
 async function update(db, ddoc, update, id) {
   // TODO: build update URL and request it
+  let response = await _request(buildViewPath(db, ddoc, view), {
+  }, "DELETE", {
+    id,
+  });
+  handleErrors(response);
+  return (await response.json()).rows; //Should the delete call return the remaining rows or the deleted id?
 }
 
 module.exports = {
@@ -110,4 +116,5 @@ module.exports = {
   viewResultFromKey,
   viewResultsFromKeys,
   searchView,
+  update,
 };
